@@ -1,0 +1,6 @@
+@ZenPlanner.API_HostAddress = http://localhost:5196
+
+GET {{ZenPlanner.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

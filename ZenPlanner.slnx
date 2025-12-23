@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="ZenPlanner.API/ZenPlanner.API.csproj" />
+  <Project Path="ZenPlanner.Application/ZenPlanner.Application.csproj" />
+  <Project Path="ZenPlanner.Domain/ZenPlanner.Domain.csproj" />
+  <Project Path="ZenPlanner.Infrastructure/ZenPlanner.Infrastructure.csproj" />
+</Solution>
