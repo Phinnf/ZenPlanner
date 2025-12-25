@@ -1,26 +1,32 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using ZenPlanner.Domain.Common;
 
-namespace ZenPlanner.Domain.Entities
+namespace ZenPlanner.Domain.Entities;
+
+public class SubTask : BaseEntity
 {
-    public class SubTask
+    public string Title { get; private set; }
+    public bool IsCompleted { get; private set; }
+
+    // Foreign Key (Khóa ngoại)
+    public Guid TaskItemId { get; private set; }
+
+    // Navigation Property (Để Entity Framework hiểu mối quan hệ)
+    public virtual TaskItem TaskItem { get; private set; }
+
+    private SubTask() { } // Constructor cho EF Core
+
+    public SubTask(string title, Guid taskItemId)
     {
-        [Key]
-        public int Id { get; set; }
+        if (string.IsNullOrWhiteSpace(title))
+            throw new ArgumentException("Subtask cannot be empty");
 
-        [Required]
-        [MaxLength(200)]
-        public string Title { get; set; } = string.Empty;
+        Title = title;
+        TaskItemId = taskItemId;
+        IsCompleted = false;
+    }
 
-        public bool IsCompleted { get; set; } = false;
-
-        public int EstimatedDurationMinutes { get; set; }
-
-        // Khóa ngoại
-        public int TaskItemId { get; set; }
-
-        [ForeignKey("TaskItemId")]
-        public TaskItem? TaskItem { get; set; }
+    public void MarkComplete(bool completed)
+    {
+        IsCompleted = completed;
     }
 }

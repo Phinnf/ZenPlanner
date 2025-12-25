@@ -1,53 +1,37 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
+using ZenPlanner.Application.Interfaces;
+using ZenPlanner.Application.Services;
+using ZenPlanner.Domain.Interfaces;
 using ZenPlanner.Infrastructure.Data;
+using ZenPlanner.Infrastructure.Repositories;
 
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 var builder = WebApplication.CreateBuilder(args);
 
-
+// 2. CẤU HÌNH DATABASE
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-// Đăng ký AppDbContext sử dụng PostgreSQL
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
-// --- KẾT THÚC CẤU HÌNH DATABASE ---
-// Add services to the container.
+
+// 3. ĐĂNG KÝ SERVICES (DI)
 builder.Services.AddControllers();
+builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+builder.Services.AddScoped<ITaskService, TaskService>();
 
-
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+// 4. CẤU HÌNH OPENAPI (Swagger)
 builder.Services.AddOpenApi();
-
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// 5. CẤU HÌNH MIDDLEWARE
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.MapOpenApi(); 
 }
 
 app.UseHttpsRedirection();
+app.UseAuthorization();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+// 6. MAP CONTROLLERS (QUAN TRỌNG ĐỂ KHÔNG BỊ LỖI 404)
+app.MapControllers();
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

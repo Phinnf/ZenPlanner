@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -13,44 +12,41 @@ namespace ZenPlanner.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Tasks",
+                name: "TaskItems",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     DueDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    ScheduledTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    IsUrgent = table.Column<bool>(type: "boolean", nullable: false),
-                    IsImportant = table.Column<bool>(type: "boolean", nullable: false),
-                    IsCompleted = table.Column<bool>(type: "boolean", nullable: false),
-                    IsAiGenerated = table.Column<bool>(type: "boolean", nullable: false)
+                    Priority = table.Column<int>(type: "integer", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tasks", x => x.Id);
+                    table.PrimaryKey("PK_TaskItems", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "SubTasks",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
                     IsCompleted = table.Column<bool>(type: "boolean", nullable: false),
-                    EstimatedDurationMinutes = table.Column<int>(type: "integer", nullable: false),
-                    TaskItemId = table.Column<int>(type: "integer", nullable: false)
+                    TaskItemId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SubTasks", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_SubTasks_Tasks_TaskItemId",
+                        name: "FK_SubTasks_TaskItems_TaskItemId",
                         column: x => x.TaskItemId,
-                        principalTable: "Tasks",
+                        principalTable: "TaskItems",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -68,7 +64,7 @@ namespace ZenPlanner.Infrastructure.Migrations
                 name: "SubTasks");
 
             migrationBuilder.DropTable(
-                name: "Tasks");
+                name: "TaskItems");
         }
     }
 }
